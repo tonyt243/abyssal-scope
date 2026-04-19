@@ -20,7 +20,6 @@ body {
   color: var(--hud-primary);
   font-family: var(--font-hud);
   margin: 0;
-  overflow: hidden;
 }
 
 /* Scanline overlay */

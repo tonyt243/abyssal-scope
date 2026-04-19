@@ -9,6 +9,7 @@ import SonarPing from '@/components/SonarPing'
 import SignalStrength from '@/components/SignalStrength'
 import ThemeToggle from '@/components/ThemeToggle'
 import LoadingScreen from '@/components/LoadingScreen'
+import { useRouter } from 'next/navigation'
 
 const GlobeMap = dynamic(() => import('@/components/GlobeMap'), { ssr: false })
 
@@ -32,6 +33,7 @@ export default function Home() {
   const [pingColor, setPingColor] = useState('#00d4ff')
   const [isDark, setIsDark]       = useState(true)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     supabase
@@ -74,6 +76,13 @@ export default function Home() {
         </span>
         <div className="flex items-center gap-3">
           <ThemeToggle isDark={isDark} onToggle={() => setIsDark(prev => !prev)} />
+          <button
+            onClick={() => router.push('/about')}
+            className="text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
+            style={{ border: '1px solid var(--hud-border)', padding: '4px 12px', fontFamily: 'var(--font-hud)' }}
+          >
+            ABOUT
+          </button>
           <SignalStrength />
           <span className="text-[var(--hud-primary)] text-xs opacity-60">
             {regions.length} REGIONS TRACKED
