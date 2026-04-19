@@ -9,9 +9,11 @@ import SonarPing from '@/components/SonarPing'
 import SignalStrength from '@/components/SignalStrength'
 import ThemeToggle from '@/components/ThemeToggle'
 import LoadingScreen from '@/components/LoadingScreen'
-import { useRouter } from 'next/navigation'
 import ThreatLegend from '@/components/ThreatLegend'
 import ReportForm from '@/components/ReportForm'
+import HudStats from '@/components/HudStats'
+import { useRouter } from 'next/navigation'
+import RecentReports from '@/components/RecentReports'
 
 const GlobeMap = dynamic(() => import('@/components/GlobeMap'), { ssr: false })
 
@@ -34,9 +36,10 @@ export default function Home() {
   const [showPing, setShowPing]   = useState(false)
   const [pingColor, setPingColor] = useState('#00d4ff')
   const [isDark, setIsDark]       = useState(true)
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
+  const [loading, setLoading]     = useState(true)
   const [showReport, setShowReport] = useState(false)
+  const router = useRouter()
+  const [showReports, setShowReports] = useState(false)
 
   useEffect(() => {
     supabase
@@ -74,9 +77,11 @@ export default function Home() {
             ABYSSAL SCOPE
           </span>
         </div>
-        <span className="text-[var(--hud-primary)] text-xs tracking-widest opacity-60">
-          OCEAN THREAT MONITORING SYSTEM
-        </span>
+
+        {/* Center stats */}
+        <HudStats regions={regions} />
+
+        {/* Right controls */}
         <div className="flex items-center gap-3">
           <ThemeToggle isDark={isDark} onToggle={() => setIsDark(prev => !prev)} />
           <button
@@ -93,10 +98,14 @@ export default function Home() {
           >
             + REPORT
           </button>
+          <button
+            onClick={() => setShowReports(true)}
+            className="text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
+            style={{ border: '1px solid var(--hud-border)', padding: '4px 12px', fontFamily: 'var(--font-hud)' }}
+          >
+            FIELD REPORTS
+          </button>
           <SignalStrength />
-          <span className="text-[var(--hud-primary)] text-xs opacity-60">
-            {regions.length} REGIONS TRACKED
-          </span>
         </div>
       </div>
 
@@ -112,6 +121,7 @@ export default function Home() {
         )}
       </div>
 
+      {/* Threat legend */}
       {appState === 'map' && (
         <ThreatLegend regions={regions} />
       )}
@@ -155,8 +165,13 @@ export default function Home() {
         />
       )}
 
+      {/* Report form */}
       {showReport && (
         <ReportForm onClose={() => setShowReport(false)} />
+      )}
+
+      {showReports && (
+        <RecentReports onClose={() => setShowReports(false)} />
       )}
 
     </main>
