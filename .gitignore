@@ -1,0 +1,17 @@
+ # Dependencies
+node_modules/
+.next/
+
+.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.pyc
+venv/
+*.egg-info/
+
+# Misc
+.DS_Store
+.vercel
