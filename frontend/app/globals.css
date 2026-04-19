@@ -128,6 +128,8 @@ body::after {
   background: #020b14 !important;
 }
 
+
+
 /* Light mode overrides */
 body.light-mode {
   --hud-primary: #0a4a6e;

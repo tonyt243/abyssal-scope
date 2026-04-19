@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { OceanRegion } from '@/lib/supabase'
+import ZoomControls from './ZoomControls'
 
 const THREAT_COLORS: Record<string, string> = {
   coral_bleaching: '#ff6b35',
@@ -207,6 +208,7 @@ export default function GlobeMap({ regions, onRegionSelect, selected, isDark }: 
           }}
         />
       )}
+      <ZoomControls />
     </MapContainer>
   )
 }
