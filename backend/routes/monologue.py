@@ -44,13 +44,10 @@ Write your transmission following these rules:
 
 @router.post("/monologue")
 async def generate_monologue(request: MonologueRequest):
-    def stream():
-        with client.messages.stream(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=400,
-            messages=[{"role": "user", "content": build_prompt(request)}]
-        ) as stream:
-            for text in stream.text_stream:
-                yield text
-
-    return StreamingResponse(stream(), media_type="text/plain")
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=400,
+        messages=[{"role": "user", "content": build_prompt(request)}]
+    )
+    text = message.content[0].text
+    return {"text": text}

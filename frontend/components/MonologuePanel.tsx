@@ -39,43 +39,33 @@ export default function MonologuePanel({ region, onComplete, onBack, onMonologue
 
   // Fetch monologue stream from FastAPI
   useEffect(() => {
-    const fetchMonologue = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/monologue`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            region_name:         region.name,
-            slug:                region.slug,
-            health_score:        region.health_score,
-            primary_threat:      region.primary_threat,
-            threat_description:  region.threat_description,
-            temperature_anomaly: region.temperature_anomaly,
-          }),
-        })
+  const fetchMonologue = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/monologue`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          region_name:         region.name,
+          slug:                region.slug,
+          health_score:        region.health_score,
+          primary_threat:      region.primary_threat,
+          threat_description:  region.threat_description,
+          temperature_anomaly: region.temperature_anomaly,
+        }),
+      })
 
-        const reader = res.body?.getReader()
-        const decoder = new TextDecoder()
-
-        if (!reader) return
-
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          const chunk = decoder.decode(value)
-          monologueRef.current += chunk
-          setMonologue(prev => prev + chunk)
-        }
-
-        setStreaming(false)
-      } catch (err) {
-        console.error('Monologue fetch failed:', err)
-        setStreaming(false)
-      }
+      const data = await res.json()
+      monologueRef.current = data.text
+      setMonologue(data.text)
+      setStreaming(false)
+    } catch (err) {
+      console.error('Monologue fetch failed:', err)
+      setStreaming(false)
     }
+  }
 
-    fetchMonologue()
-  }, [region])
+  fetchMonologue()
+}, [region])
 
   // Typewriter effect
   useEffect(() => {

@@ -29,9 +29,10 @@ type SubmarineProps = {
   fromLatLng: [number, number]
   toLatLng: [number, number]
   onArrived: () => void
+  isDark: boolean
 }
 
-function SubmarineOverlay({ fromLatLng, toLatLng, onArrived }: SubmarineProps) {
+function SubmarineOverlay({ fromLatLng, toLatLng, onArrived, isDark }: SubmarineProps) {
   const map = useMap()
   const [pos, setPos] = useState({ x: 0, y: 0 })
   const [angle, setAngle] = useState(0)
@@ -104,21 +105,23 @@ function SubmarineOverlay({ fromLatLng, toLatLng, onArrived }: SubmarineProps) {
       ))}
 
      {/* Submarine image */}
-<div
-  className="absolute pointer-events-none z-[500]"
-  style={{
-    left: pos.x,
-    top: pos.y,
-    transform: `translate(-50%, -50%) rotate(${angle}deg)`,
-    filter: 'drop-shadow(0 0 6px #00d4ff) drop-shadow(0 0 12px #00aaff) brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(170deg)',
-  }}
->
-  <img
-    src="/submarine.png"
-    alt="submarine"
-    style={{ width: 64, height: 'auto' }}
-  />
-</div>
+      <div
+        className="absolute pointer-events-none z-[500]"
+        style={{
+          left: pos.x,
+          top: pos.y,
+          transform: `translate(-50%, -50%) rotate(${angle}deg)`,
+          filter: isDark
+            ? 'brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(170deg) drop-shadow(0 0 6px #00d4ff)'
+            : 'brightness(0) drop-shadow(0 0 4px rgba(0,0,0,0.5))',
+        }}
+      >
+      <img
+        src="/submarine.png"
+        alt="submarine"
+        style={{ width: 64, height: 'auto' }}
+      />
+      </div>
     </>
   )
 }
@@ -158,6 +161,8 @@ export default function GlobeMap({ regions, onRegionSelect, selected, isDark }: 
       className="w-full h-full"
       zoomControl={false}
       style={{ background: '#020b14' }}
+      maxBounds={[[-75, -200], [75, 200]]}
+      maxBoundsViscosity={0.9}
     >
       <TileLayer
         url={isDark
@@ -202,12 +207,13 @@ export default function GlobeMap({ regions, onRegionSelect, selected, isDark }: 
         <SubmarineOverlay
           fromLatLng={submarine.from}
           toLatLng={submarine.to}
+          isDark={isDark}
           onArrived={() => {
             onRegionSelect(submarine.region)
             setSubmarine(null)
-          }}
-        />
-      )}
+        }}
+      />
+    )}
       <ZoomControls />
     </MapContainer>
   )
