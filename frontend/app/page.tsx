@@ -3,12 +3,16 @@
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { supabase, OceanRegion } from '@/lib/supabase'
+import MonologuePanel from '@/components/MonologuePanel'
 
 const GlobeMap = dynamic(() => import('@/components/GlobeMap'), { ssr: false })
 
+type AppState = 'map' | 'monologue' | 'dialogue'
+
 export default function Home() {
-  const [regions, setRegions] = useState<OceanRegion[]>([])
+  const [regions, setRegions]   = useState<OceanRegion[]>([])
   const [selected, setSelected] = useState<OceanRegion | null>(null)
+  const [appState, setAppState] = useState<AppState>('map')
 
   useEffect(() => {
     supabase
@@ -16,6 +20,16 @@ export default function Home() {
       .select('*')
       .then(({ data }) => { if (data) setRegions(data) })
   }, [])
+
+  const handleRegionSelect = (region: OceanRegion) => {
+    setSelected(region)
+    setAppState('monologue')
+  }
+
+  const handleBack = () => {
+    setSelected(null)
+    setAppState('map')
+  }
 
   return (
     <main className="w-screen h-screen relative overflow-hidden bg-[#020b14]">
@@ -36,19 +50,19 @@ export default function Home() {
         </span>
       </div>
 
-      {/* Map — full screen */}
+      {/* Map */}
       <div className="absolute inset-0 z-0">
         {regions.length > 0 && (
           <GlobeMap
             regions={regions}
-            onRegionSelect={setSelected}
+            onRegionSelect={handleRegionSelect}
             selected={selected}
           />
         )}
       </div>
 
       {/* Bottom instruction */}
-      {!selected && (
+      {appState === 'map' && (
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-center">
           <p className="text-[var(--hud-primary)] text-xs tracking-[0.4em] opacity-70 animate-pulse">
             SELECT A REGION TO ESTABLISH CONTACT
@@ -56,27 +70,13 @@ export default function Home() {
         </div>
       )}
 
-      {/* Selected region panel — placeholder for Phase 3 */}
-      {selected && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/60">
-          <div className="hud-border hud-corner bg-[var(--hud-surface)] p-8 max-w-md w-full mx-4">
-            <p className="text-[var(--hud-primary)] text-xs tracking-widest mb-2 opacity-60">
-              CONTACT ESTABLISHED
-            </p>
-            <h2 className="text-[var(--hud-primary)] text-xl tracking-wider mb-4">
-              {selected.name.toUpperCase()}
-            </h2>
-            <p className="text-[var(--hud-primary)] text-sm opacity-70 mb-6">
-              Health Score: {selected.health_score}/100
-            </p>
-            <button
-              onClick={() => setSelected(null)}
-              className="text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity"
-            >
-              ← BACK TO MAP
-            </button>
-          </div>
-        </div>
+      {/* Monologue panel */}
+      {appState === 'monologue' && selected && (
+        <MonologuePanel
+          region={selected}
+          onComplete={() => setAppState('dialogue')}
+          onBack={handleBack}
+        />
       )}
 
     </main>
