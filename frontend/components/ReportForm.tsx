@@ -138,7 +138,7 @@ export default function ReportForm({ onClose }: Props) {
                 type="text"
                 value={form.location_name}
                 onChange={e => setForm(prev => ({ ...prev, location_name: e.target.value }))}
-                placeholder="e.g. Huntington Beach, CA"
+                placeholder="e.g. city, state, coordinates"
                 className="w-full bg-transparent border border-[var(--hud-border)] text-[var(--hud-primary)] text-xs p-3 focus:outline-none focus:border-[var(--hud-primary)]"
                 style={{ fontFamily: 'var(--font-hud)' }}
               />
