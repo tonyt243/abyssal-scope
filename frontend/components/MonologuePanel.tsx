@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { OceanRegion } from '@/lib/supabase'
+import HealthBar from './HealthBar'
 
 type Props = {
   region: OceanRegion
@@ -95,9 +96,9 @@ export default function MonologuePanel({ region, onComplete, onBack, onMonologue
     region.health_score < 50 ? '#ffaa00' : '#00d4ff'
 
   return (
-    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/70">
+    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/70 animate-fade-in">
       <div
-        className="hud-border hud-corner bg-[var(--hud-surface)] w-full max-w-2xl mx-4 p-8"
+        className="hud-border hud-corner bg-[var(--hud-surface)] w-full max-w-2xl mx-4 p-8 animate-slide-in"
         style={{ borderColor: `${threatColor}44` }}
       >
 
@@ -129,6 +130,10 @@ export default function MonologuePanel({ region, onComplete, onBack, onMonologue
               {region.health_score}<span className="text-xs opacity-50">/100</span>
             </p>
           </div>
+          <div className="w-full mt-4">
+            <p className="text-xs opacity-50 tracking-widest mb-2">ECOSYSTEM HEALTH</p>
+            <HealthBar score={region.health_score} color={healthColor} />
+          </div>
           <div>
             <p className="text-xs opacity-50 tracking-widest mb-1">THREAT CLASS</p>
             <p className="text-sm" style={{ color: threatColor }}>
@@ -148,6 +153,8 @@ export default function MonologuePanel({ region, onComplete, onBack, onMonologue
             </p>
             </div>
         </div>
+
+        
 
         {/* Monologue */}
         <div className="min-h-[140px] mb-6">

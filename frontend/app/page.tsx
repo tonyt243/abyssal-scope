@@ -5,8 +5,19 @@ import dynamic from 'next/dynamic'
 import { supabase, OceanRegion } from '@/lib/supabase'
 import MonologuePanel from '@/components/MonologuePanel'
 import DialoguePanel from '@/components/DialoguePanel'
+import SonarPing from '@/components/SonarPing'
+import SignalStrength from '@/components/SignalStrength'
 
 const GlobeMap = dynamic(() => import('@/components/GlobeMap'), { ssr: false })
+
+const THREAT_COLORS: Record<string, string> = {
+  coral_bleaching: '#ff6b35',
+  dead_zone:       '#8b00ff',
+  pollution:       '#ff4444',
+  ice_melt:        '#00aaff',
+  overfishing:     '#ffaa00',
+  acidification:   '#ff00aa',
+}
 
 type AppState = 'map' | 'monologue' | 'dialogue'
 
@@ -15,6 +26,8 @@ export default function Home() {
   const [selected, setSelected]   = useState<OceanRegion | null>(null)
   const [appState, setAppState]   = useState<AppState>('map')
   const [monologue, setMonologue] = useState('')
+  const [showPing, setShowPing]   = useState(false)
+  const [pingColor, setPingColor] = useState('#00d4ff')
 
   useEffect(() => {
     supabase
@@ -26,7 +39,9 @@ export default function Home() {
   const handleRegionSelect = (region: OceanRegion) => {
     setSelected(region)
     setMonologue('')
-    setAppState('monologue')
+    setPingColor(THREAT_COLORS[region.primary_threat] ?? '#00d4ff')
+    setShowPing(true)
+
   }
 
   const handleBack = () => {
@@ -49,9 +64,12 @@ export default function Home() {
         <span className="text-[var(--hud-primary)] text-xs tracking-widest opacity-60">
           OCEAN THREAT MONITORING SYSTEM v1.0
         </span>
-        <span className="text-[var(--hud-primary)] text-xs opacity-60">
-          {regions.length} REGIONS TRACKED
-        </span>
+        <div className="flex items-center gap-3">
+          <SignalStrength />
+          <span className="text-[var(--hud-primary)] text-xs opacity-60">
+            {regions.length} REGIONS TRACKED
+          </span>
+        </div>
       </div>
 
       {/* Map */}
@@ -72,6 +90,17 @@ export default function Home() {
             SELECT A REGION TO ESTABLISH CONTACT
           </p>
         </div>
+      )}
+
+      {/* Sonar ping */}
+      {showPing && (
+        <SonarPing
+          color={pingColor}
+          onDone={() => {
+            setShowPing(false)
+            setAppState('monologue')
+          }}
+        />
       )}
 
       {/* Monologue panel */}
