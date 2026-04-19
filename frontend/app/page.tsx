@@ -10,6 +10,7 @@ import SignalStrength from '@/components/SignalStrength'
 import ThemeToggle from '@/components/ThemeToggle'
 import LoadingScreen from '@/components/LoadingScreen'
 import { useRouter } from 'next/navigation'
+import ThreatLegend from '@/components/ThreatLegend'
 
 const GlobeMap = dynamic(() => import('@/components/GlobeMap'), { ssr: false })
 
@@ -101,6 +102,10 @@ export default function Home() {
           />
         )}
       </div>
+
+      {appState === 'map' && (
+        <ThreatLegend regions={regions} />
+      )}
 
       {/* Bottom instruction */}
       {appState === 'map' && (
