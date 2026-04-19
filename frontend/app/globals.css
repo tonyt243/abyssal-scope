@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
 
 :root {
   --hud-primary: #00d4ff;
@@ -126,4 +126,31 @@ body::after {
 .leaflet-container {
   font-family: 'Share Tech Mono', monospace !important;
   background: #020b14 !important;
+}
+
+/* Light mode overrides */
+body.light-mode {
+  --hud-primary: #0a4a6e;
+  --hud-secondary: #e8f4f8;
+  --hud-bg: #e8f4f8;
+  --hud-surface: #ffffff;
+  --hud-border: rgba(10, 74, 110, 0.25);
+  --hud-glow: 0 0 20px rgba(10, 74, 110, 0.1);
+  background: #e8f4f8;
+  color: #0a4a6e;
+}
+
+body.light-mode .hud-corner::before,
+body.light-mode .hud-corner::after {
+  border-color: #0a4a6e;
+}
+
+body.light-mode .hud-tooltip {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(10, 74, 110, 0.3) !important;
+  color: #0a4a6e !important;
+}
+
+body.light-mode .leaflet-container {
+  background: #a8d5e8 !important;
 }

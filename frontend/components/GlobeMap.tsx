@@ -126,9 +126,10 @@ type Props = {
   regions: OceanRegion[]
   onRegionSelect: (region: OceanRegion) => void
   selected: OceanRegion | null
+  isDark: boolean
 }
 
-export default function GlobeMap({ regions, onRegionSelect, selected }: Props) {
+export default function GlobeMap({ regions, onRegionSelect, selected, isDark }: Props) {
   const [submarine, setSubmarine] = useState<{
     from: [number, number]
     to: [number, number]
@@ -158,7 +159,10 @@ export default function GlobeMap({ regions, onRegionSelect, selected }: Props) {
       style={{ background: '#020b14' }}
     >
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        url={isDark
+          ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+        }
         attribution='&copy; <a href="https://carto.com/">CARTO</a>'
       />
 

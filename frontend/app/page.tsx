@@ -7,6 +7,7 @@ import MonologuePanel from '@/components/MonologuePanel'
 import DialoguePanel from '@/components/DialoguePanel'
 import SonarPing from '@/components/SonarPing'
 import SignalStrength from '@/components/SignalStrength'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const GlobeMap = dynamic(() => import('@/components/GlobeMap'), { ssr: false })
 
@@ -28,6 +29,7 @@ export default function Home() {
   const [monologue, setMonologue] = useState('')
   const [showPing, setShowPing]   = useState(false)
   const [pingColor, setPingColor] = useState('#00d4ff')
+  const [isDark, setIsDark]       = useState(true)
 
   useEffect(() => {
     supabase
@@ -41,7 +43,6 @@ export default function Home() {
     setMonologue('')
     setPingColor(THREAT_COLORS[region.primary_threat] ?? '#00d4ff')
     setShowPing(true)
-
   }
 
   const handleBack = () => {
@@ -58,13 +59,14 @@ export default function Home() {
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-[var(--hud-primary)] animate-pulse" />
           <span className="text-[var(--hud-primary)] text-sm tracking-[0.3em] font-bold">
-            ABYSSALSCOPE
+            ABYSSAL SCOPE
           </span>
         </div>
         <span className="text-[var(--hud-primary)] text-xs tracking-widest opacity-60">
-          OCEAN THREAT MONITORING SYSTEM v1.0
+          OCEAN THREAT MONITORING SYSTEM
         </span>
         <div className="flex items-center gap-3">
+          <ThemeToggle isDark={isDark} onToggle={() => setIsDark(prev => !prev)} />
           <SignalStrength />
           <span className="text-[var(--hud-primary)] text-xs opacity-60">
             {regions.length} REGIONS TRACKED
@@ -79,6 +81,7 @@ export default function Home() {
             regions={regions}
             onRegionSelect={handleRegionSelect}
             selected={selected}
+            isDark={isDark}
           />
         )}
       </div>
