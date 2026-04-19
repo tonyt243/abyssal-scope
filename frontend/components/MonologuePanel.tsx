@@ -7,6 +7,7 @@ type Props = {
   region: OceanRegion
   onComplete: () => void
   onBack: () => void
+  onMonologueComplete: (text: string) => void  
 }
 
 const THREAT_LABELS: Record<string, string> = {
@@ -27,13 +28,12 @@ const THREAT_COLORS: Record<string, string> = {
   acidification:   '#ff00aa',
 }
 
-export default function MonologuePanel({ region, onComplete, onBack }: Props) {
+export default function MonologuePanel({ region, onComplete, onBack, onMonologueComplete }: Props) {
   const [monologue, setMonologue] = useState('')
   const [streaming, setStreaming] = useState(true)
   const [displayText, setDisplayText] = useState('')
   const [charIndex, setCharIndex] = useState(0)
   const monologueRef = useRef('')
-
   const threatColor = THREAT_COLORS[region.primary_threat] ?? '#00d4ff'
 
   // Fetch monologue stream from FastAPI
@@ -86,6 +86,7 @@ export default function MonologuePanel({ region, onComplete, onBack }: Props) {
       return () => clearTimeout(timeout)
     }
     if (!streaming && charIndex >= monologue.length && monologue.length > 0) {
+      onMonologueComplete(monologueRef.current)
     }
   }, [charIndex, monologue, streaming])
 

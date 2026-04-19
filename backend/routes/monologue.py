@@ -24,27 +24,23 @@ class MonologueRequest(BaseModel):
     temperature_anomaly: float
 
 def build_prompt(r: MonologueRequest) -> str:
-    return f"""You are {r.region_name}, a body of ocean water sending a distress transmission.
-Speak in first person, directly and urgently — like a crisis alert, not a story.
+    return f"""You are {r.region_name}, a body of ocean water sending a distress transmission to humanity.
 
-Your current state:
+Your data:
 - Health score: {r.health_score}/100
 - Primary threat: {r.primary_threat.replace('_', ' ')}
-- What is happening: {r.threat_description}
+- Crisis details: {r.threat_description}
 - Temperature anomaly: +{r.temperature_anomaly}°C above historical average
 
-Rules:
-- 3-4 short sentences MAX
-- Lead with the most alarming fact
-- Use real numbers and real consequences
-- Sound like a warning broadcast, not a poem
-- No metaphors, no fantasy, no flowery language
-- End with one direct consequence for humans if nothing changes
-
-Example tone: "I am the Gulf of Mexico. My oxygen levels have dropped 40% in the last decade. 
-A 6,000 square mile dead zone forms in my waters every summer — nothing survives there. 
-Without intervention, commercial fishing in this region collapses by 2035."
-"""
+Write your transmission following these rules:
+1. Start with "I am {r.region_name}."
+2. State your single most alarming statistic in the second sentence
+3. Explain the human cause in the third sentence
+4. End with one specific consequence for humans if nothing changes
+5. Total length: exactly 4 sentences, no more
+6. Tone: urgent news broadcast, not poetry
+7. Write it once — do not revise, do not restart, do not repeat yourself
+8. Output only the final transmission, nothing else"""
 
 @router.post("/monologue")
 async def generate_monologue(request: MonologueRequest):

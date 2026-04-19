@@ -4,15 +4,17 @@ import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { supabase, OceanRegion } from '@/lib/supabase'
 import MonologuePanel from '@/components/MonologuePanel'
+import DialoguePanel from '@/components/DialoguePanel'
 
 const GlobeMap = dynamic(() => import('@/components/GlobeMap'), { ssr: false })
 
 type AppState = 'map' | 'monologue' | 'dialogue'
 
 export default function Home() {
-  const [regions, setRegions]   = useState<OceanRegion[]>([])
-  const [selected, setSelected] = useState<OceanRegion | null>(null)
-  const [appState, setAppState] = useState<AppState>('map')
+  const [regions, setRegions]     = useState<OceanRegion[]>([])
+  const [selected, setSelected]   = useState<OceanRegion | null>(null)
+  const [appState, setAppState]   = useState<AppState>('map')
+  const [monologue, setMonologue] = useState('')
 
   useEffect(() => {
     supabase
@@ -23,12 +25,14 @@ export default function Home() {
 
   const handleRegionSelect = (region: OceanRegion) => {
     setSelected(region)
+    setMonologue('')
     setAppState('monologue')
   }
 
   const handleBack = () => {
     setSelected(null)
     setAppState('map')
+    setMonologue('')
   }
 
   return (
@@ -74,7 +78,17 @@ export default function Home() {
       {appState === 'monologue' && selected && (
         <MonologuePanel
           region={selected}
+          onMonologueComplete={setMonologue}
           onComplete={() => setAppState('dialogue')}
+          onBack={handleBack}
+        />
+      )}
+
+      {/* Dialogue panel */}
+      {appState === 'dialogue' && selected && (
+        <DialoguePanel
+          region={selected}
+          monologue={monologue}
           onBack={handleBack}
         />
       )}
