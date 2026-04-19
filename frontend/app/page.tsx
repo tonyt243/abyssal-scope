@@ -8,6 +8,7 @@ import DialoguePanel from '@/components/DialoguePanel'
 import SonarPing from '@/components/SonarPing'
 import SignalStrength from '@/components/SignalStrength'
 import ThemeToggle from '@/components/ThemeToggle'
+import LoadingScreen from '@/components/LoadingScreen'
 
 const GlobeMap = dynamic(() => import('@/components/GlobeMap'), { ssr: false })
 
@@ -30,6 +31,7 @@ export default function Home() {
   const [showPing, setShowPing]   = useState(false)
   const [pingColor, setPingColor] = useState('#00d4ff')
   const [isDark, setIsDark]       = useState(true)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     supabase
@@ -53,6 +55,11 @@ export default function Home() {
 
   return (
     <main className="w-screen h-screen relative overflow-hidden bg-[#020b14]">
+
+      {/* Loading screen */}
+      {loading && (
+        <LoadingScreen onComplete={() => setLoading(false)} />
+      )}
 
       {/* Top HUD bar */}
       <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-3 hud-border border-t-0 border-l-0 border-r-0">
