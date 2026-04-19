@@ -29,15 +29,15 @@ const THREAT_COLORS: Record<string, string> = {
 type AppState = 'map' | 'monologue' | 'dialogue'
 
 export default function Home() {
-  const [regions, setRegions]       = useState<OceanRegion[]>([])
-  const [selected, setSelected]     = useState<OceanRegion | null>(null)
-  const [appState, setAppState]     = useState<AppState>('map')
-  const [monologue, setMonologue]   = useState('')
-  const [showPing, setShowPing]     = useState(false)
-  const [pingColor, setPingColor]   = useState('#00d4ff')
-  const [isDark, setIsDark]         = useState(true)
-  const [loading, setLoading]       = useState(true)
-  const [showReport, setShowReport] = useState(false)
+  const [regions, setRegions]         = useState<OceanRegion[]>([])
+  const [selected, setSelected]       = useState<OceanRegion | null>(null)
+  const [appState, setAppState]       = useState<AppState>('map')
+  const [monologue, setMonologue]     = useState('')
+  const [showPing, setShowPing]       = useState(false)
+  const [pingColor, setPingColor]     = useState('#00d4ff')
+  const [isDark, setIsDark]           = useState(true)
+  const [loading, setLoading]         = useState(true)
+  const [showReport, setShowReport]   = useState(false)
   const [showReports, setShowReports] = useState(false)
   const router = useRouter()
 
@@ -70,10 +70,10 @@ export default function Home() {
       )}
 
       {/* Top HUD bar */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-3 hud-border border-t-0 border-l-0 border-r-0">
+      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-2 hud-border border-t-0 border-l-0 border-r-0">
 
         {/* Logo */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0">
           <div className="relative">
             <div
               className="absolute inset-0 rounded-full animate-ping"
@@ -96,13 +96,13 @@ export default function Home() {
               </svg>
             </div>
           </div>
-          <div className="flex flex-col">
+          <div className="hidden sm:flex flex-col">
             <span
               className="font-bold leading-none"
               style={{
                 color: '#00d4ff',
                 fontFamily: 'var(--font-hud)',
-                fontSize: 16,
+                fontSize: 15,
                 letterSpacing: '0.25em',
                 textShadow: '0 0 20px rgba(0,212,255,0.5)',
               }}
@@ -114,7 +114,7 @@ export default function Home() {
               style={{
                 color: '#00d4ff',
                 fontFamily: 'var(--font-hud)',
-                fontSize: 10,
+                fontSize: 9,
                 letterSpacing: '0.5em',
                 opacity: 0.7,
               }}
@@ -124,30 +124,32 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Center stats */}
-        <HudStats regions={regions} />
+        {/* Center stats — hidden on small screens */}
+        <div className="hidden md:block">
+          <HudStats regions={regions} />
+        </div>
 
         {/* Right controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0">
           <ThemeToggle isDark={isDark} onToggle={() => setIsDark(prev => !prev)} />
           <button
             onClick={() => router.push('/about')}
-            className="text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
-            style={{ border: '1px solid var(--hud-border)', padding: '4px 12px', fontFamily: 'var(--font-hud)' }}
+            className="hidden sm:block text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
+            style={{ border: '1px solid var(--hud-border)', padding: '4px 10px', fontFamily: 'var(--font-hud)' }}
           >
             ABOUT
           </button>
           <button
             onClick={() => setShowReport(true)}
             className="text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
-            style={{ border: '1px solid var(--hud-border)', padding: '4px 12px', fontFamily: 'var(--font-hud)' }}
+            style={{ border: '1px solid var(--hud-border)', padding: '4px 10px', fontFamily: 'var(--font-hud)' }}
           >
             + REPORT
           </button>
           <button
             onClick={() => setShowReports(true)}
-            className="text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
-            style={{ border: '1px solid var(--hud-border)', padding: '4px 12px', fontFamily: 'var(--font-hud)' }}
+            className="hidden md:block text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
+            style={{ border: '1px solid var(--hud-border)', padding: '4px 10px', fontFamily: 'var(--font-hud)' }}
           >
             FIELD REPORTS
           </button>
