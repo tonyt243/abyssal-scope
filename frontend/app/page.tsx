@@ -13,6 +13,7 @@ import ThreatLegend from '@/components/ThreatLegend'
 import ReportForm from '@/components/ReportForm'
 import HudStats from '@/components/HudStats'
 import RecentReports from '@/components/RecentReports'
+import MobileMenu from '@/components/MobileMenu'
 import { useRouter } from 'next/navigation'
 
 const GlobeMap = dynamic(() => import('@/components/GlobeMap'), { ssr: false })
@@ -96,7 +97,7 @@ export default function Home() {
               </svg>
             </div>
           </div>
-          <div className="hidden sm:flex flex-col">
+          <div className="flex flex-col">
             <span
               className="font-bold leading-none"
               style={{
@@ -124,17 +125,17 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Center stats — hidden on small screens */}
+        {/* Center stats — hidden on mobile */}
         <div className="hidden md:block">
           <HudStats regions={regions} />
         </div>
 
-        {/* Right controls */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Desktop controls */}
+        <div className="hidden md:flex items-center gap-2 shrink-0">
           <ThemeToggle isDark={isDark} onToggle={() => setIsDark(prev => !prev)} />
           <button
             onClick={() => router.push('/about')}
-            className="hidden sm:block text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
+            className="text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
             style={{ border: '1px solid var(--hud-border)', padding: '4px 10px', fontFamily: 'var(--font-hud)' }}
           >
             ABOUT
@@ -148,12 +149,23 @@ export default function Home() {
           </button>
           <button
             onClick={() => setShowReports(true)}
-            className="hidden md:block text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
+            className="text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
             style={{ border: '1px solid var(--hud-border)', padding: '4px 10px', fontFamily: 'var(--font-hud)' }}
           >
             FIELD REPORTS
           </button>
           <SignalStrength />
+        </div>
+
+        {/* Mobile controls */}
+        <div className="flex md:hidden items-center gap-2">
+          <SignalStrength />
+          <MobileMenu
+            onReport={() => setShowReport(true)}
+            onFieldReports={() => setShowReports(true)}
+            isDark={isDark}
+            onToggleTheme={() => setIsDark(prev => !prev)}
+          />
         </div>
       </div>
 
