@@ -53,7 +53,7 @@ async def chat(request: ChatRequest):
     def stream():
         with client.messages.stream(
             model="claude-haiku-4-5-20251001",
-            max_tokens=300,
+            max_tokens=150,
             system=build_system_prompt(request),
             messages=[{"role": m.role, "content": m.content} for m in request.messages]
         ) as s:
