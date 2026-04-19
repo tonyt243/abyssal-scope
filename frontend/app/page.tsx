@@ -12,8 +12,8 @@ import LoadingScreen from '@/components/LoadingScreen'
 import ThreatLegend from '@/components/ThreatLegend'
 import ReportForm from '@/components/ReportForm'
 import HudStats from '@/components/HudStats'
-import { useRouter } from 'next/navigation'
 import RecentReports from '@/components/RecentReports'
+import { useRouter } from 'next/navigation'
 
 const GlobeMap = dynamic(() => import('@/components/GlobeMap'), { ssr: false })
 
@@ -29,17 +29,17 @@ const THREAT_COLORS: Record<string, string> = {
 type AppState = 'map' | 'monologue' | 'dialogue'
 
 export default function Home() {
-  const [regions, setRegions]     = useState<OceanRegion[]>([])
-  const [selected, setSelected]   = useState<OceanRegion | null>(null)
-  const [appState, setAppState]   = useState<AppState>('map')
-  const [monologue, setMonologue] = useState('')
-  const [showPing, setShowPing]   = useState(false)
-  const [pingColor, setPingColor] = useState('#00d4ff')
-  const [isDark, setIsDark]       = useState(true)
-  const [loading, setLoading]     = useState(true)
+  const [regions, setRegions]       = useState<OceanRegion[]>([])
+  const [selected, setSelected]     = useState<OceanRegion | null>(null)
+  const [appState, setAppState]     = useState<AppState>('map')
+  const [monologue, setMonologue]   = useState('')
+  const [showPing, setShowPing]     = useState(false)
+  const [pingColor, setPingColor]   = useState('#00d4ff')
+  const [isDark, setIsDark]         = useState(true)
+  const [loading, setLoading]       = useState(true)
   const [showReport, setShowReport] = useState(false)
-  const router = useRouter()
   const [showReports, setShowReports] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     supabase
@@ -71,11 +71,57 @@ export default function Home() {
 
       {/* Top HUD bar */}
       <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-3 hud-border border-t-0 border-l-0 border-r-0">
+
+        {/* Logo */}
         <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-[var(--hud-primary)] animate-pulse" />
-          <span className="text-[var(--hud-primary)] text-sm tracking-[0.3em] font-bold">
-            ABYSSAL SCOPE
-          </span>
+          <div className="relative">
+            <div
+              className="absolute inset-0 rounded-full animate-ping"
+              style={{ background: 'rgba(0,212,255,0.15)', animationDuration: '2s' }}
+            />
+            <div
+              className="relative w-8 h-8 rounded-full flex items-center justify-center"
+              style={{
+                border: '1px solid rgba(0,212,255,0.6)',
+                background: 'rgba(0,212,255,0.08)',
+                boxShadow: '0 0 12px rgba(0,212,255,0.3)',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="7" stroke="#00d4ff" strokeWidth="0.5" strokeOpacity="0.4"/>
+                <circle cx="8" cy="8" r="4.5" stroke="#00d4ff" strokeWidth="0.5" strokeOpacity="0.6"/>
+                <circle cx="8" cy="8" r="2" stroke="#00d4ff" strokeWidth="0.5" strokeOpacity="0.8"/>
+                <circle cx="8" cy="8" r="1" fill="#00d4ff"/>
+                <line x1="8" y1="8" x2="15" y2="8" stroke="#00d4ff" strokeWidth="0.8" strokeOpacity="0.8"/>
+              </svg>
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span
+              className="font-bold leading-none"
+              style={{
+                color: '#00d4ff',
+                fontFamily: 'var(--font-hud)',
+                fontSize: 16,
+                letterSpacing: '0.25em',
+                textShadow: '0 0 20px rgba(0,212,255,0.5)',
+              }}
+            >
+              ABYSSAL
+            </span>
+            <span
+              className="leading-none"
+              style={{
+                color: '#00d4ff',
+                fontFamily: 'var(--font-hud)',
+                fontSize: 10,
+                letterSpacing: '0.5em',
+                opacity: 0.7,
+              }}
+            >
+              SCOPE
+            </span>
+          </div>
         </div>
 
         {/* Center stats */}
@@ -170,6 +216,7 @@ export default function Home() {
         <ReportForm onClose={() => setShowReport(false)} />
       )}
 
+      {/* Recent reports */}
       {showReports && (
         <RecentReports onClose={() => setShowReports(false)} />
       )}
