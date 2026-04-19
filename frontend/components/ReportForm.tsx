@@ -59,19 +59,21 @@ export default function ReportForm({ onClose }: Props) {
   const threatColor = selectedThreat?.color ?? '#00d4ff'
 
   return (
-    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/70 animate-fade-in">
+    <div className="absolute inset-0 z-20 flex items-end md:items-center justify-center bg-black/70 animate-fade-in">
       <div
-        className="hud-border hud-corner bg-[var(--hud-surface)] w-full max-w-lg mx-4 p-8 animate-slide-in"
-        style={{ borderColor: 'rgba(0,212,255,0.3)' }}
+        className="hud-border hud-corner bg-[var(--hud-surface)] w-full md:max-w-lg md:mx-4 p-6 md:p-8 animate-slide-in overflow-y-auto"
+        style={{
+          borderColor: 'rgba(0,212,255,0.3)',
+          maxHeight: '90vh',
+        }}
       >
-
         {/* Header */}
-        <div className="flex items-start justify-between mb-6">
+        <div className="flex items-start justify-between mb-5 md:mb-6">
           <div>
             <p className="text-xs tracking-[0.4em] opacity-50 mb-1 text-[var(--hud-primary)]">
               COMMUNITY INTELLIGENCE
             </p>
-            <h2 className="text-lg tracking-widest text-[var(--hud-primary)]">
+            <h2 className="text-base md:text-lg tracking-widest text-[var(--hud-primary)]">
               SUBMIT OCEAN REPORT
             </h2>
           </div>
@@ -86,12 +88,7 @@ export default function ReportForm({ onClose }: Props) {
         {submitted ? (
           /* Success state */
           <div className="text-center py-8">
-            <div
-              className="text-4xl mb-4"
-              style={{ color: '#00ff88' }}
-            >
-              ✓
-            </div>
+            <div className="text-4xl mb-4" style={{ color: '#00ff88' }}>✓</div>
             <p className="text-sm tracking-widest mb-2" style={{ color: '#00ff88' }}>
               REPORT TRANSMITTED
             </p>
@@ -111,7 +108,6 @@ export default function ReportForm({ onClose }: Props) {
             </button>
           </div>
         ) : (
-          /* Form */
           <div className="space-y-4">
 
             {/* Title */}

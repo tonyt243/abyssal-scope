@@ -91,25 +91,28 @@ export default function DialoguePanel({ region, monologue, onBack }: Props) {
   }
 
   return (
-    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/70">
+    <div className="absolute inset-0 z-20 flex items-end md:items-center justify-center bg-black/70">
       <div
-        className="hud-border hud-corner bg-[var(--hud-surface)] w-full max-w-2xl mx-4 flex flex-col"
-        style={{ height: '85vh', borderColor: `${threatColor}44` }}
+        className="hud-border hud-corner bg-[var(--hud-surface)] w-full md:max-w-2xl md:mx-4 flex flex-col"
+        style={{
+          height: '90vh',
+          borderColor: `${threatColor}44`,
+        }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--hud-border)]">
+        <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 border-b border-[var(--hud-border)]">
           <div>
             <p className="text-xs tracking-[0.4em] opacity-50 mb-1" style={{ color: threatColor }}>
               OPEN CHANNEL
             </p>
-            <h2 className="text-lg tracking-widest" style={{ color: threatColor }}>
+            <h2 className="text-sm md:text-lg tracking-widest" style={{ color: threatColor }}>
               {region.name.toUpperCase()}
             </h2>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: threatColor }} />
-              <span className="text-xs tracking-widest opacity-60" style={{ color: threatColor }}>
+              <span className="text-xs tracking-widest opacity-60 hidden sm:block" style={{ color: threatColor }}>
                 LIVE
               </span>
             </div>
@@ -123,8 +126,7 @@ export default function DialoguePanel({ region, monologue, onBack }: Props) {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-          {/* Initial hint */}
+        <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 space-y-4">
           {messages.length === 0 && (
             <div className="text-center py-8">
               <p className="text-xs tracking-[0.3em] opacity-40 animate-pulse text-[var(--hud-primary)]">
@@ -133,11 +135,10 @@ export default function DialoguePanel({ region, monologue, onBack }: Props) {
             </div>
           )}
 
-          {/* Message history */}
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div
-                className="max-w-[80%] px-4 py-3 text-sm leading-relaxed"
+                className="max-w-[85%] md:max-w-[80%] px-3 md:px-4 py-2 md:py-3 text-sm leading-relaxed"
                 style={msg.role === 'user' ? {
                   background: 'rgba(0, 212, 255, 0.08)',
                   border: '1px solid rgba(0, 212, 255, 0.2)',
@@ -167,7 +168,7 @@ export default function DialoguePanel({ region, monologue, onBack }: Props) {
           {currentStream && (
             <div className="flex justify-start">
               <div
-                className="max-w-[80%] px-4 py-3 text-sm leading-relaxed"
+                className="max-w-[85%] md:max-w-[80%] px-3 md:px-4 py-2 md:py-3 text-sm leading-relaxed"
                 style={{
                   background: `${threatColor}11`,
                   border: `1px solid ${threatColor}33`,
@@ -188,8 +189,8 @@ export default function DialoguePanel({ region, monologue, onBack }: Props) {
         </div>
 
         {/* Input */}
-        <div className="px-6 py-4 border-t border-[var(--hud-border)]">
-          <div className="flex gap-3 items-end">
+        <div className="px-4 md:px-6 py-3 md:py-4 border-t border-[var(--hud-border)]">
+          <div className="flex gap-2 md:gap-3 items-end">
             <textarea
               value={input}
               onChange={e => setInput(e.target.value)}
@@ -197,23 +198,23 @@ export default function DialoguePanel({ region, monologue, onBack }: Props) {
               placeholder="Speak to the ocean..."
               rows={2}
               disabled={streaming}
-              className="flex-1 bg-transparent border border-[var(--hud-border)] text-[var(--hud-primary)] text-sm p-3 resize-none focus:outline-none focus:border-[var(--hud-primary)] placeholder-[var(--hud-primary)] placeholder-opacity-30 tracking-wide"
+              className="flex-1 bg-transparent border border-[var(--hud-border)] text-[var(--hud-primary)] text-xs md:text-sm p-2 md:p-3 resize-none focus:outline-none focus:border-[var(--hud-primary)] placeholder-[var(--hud-primary)] placeholder-opacity-30 tracking-wide"
               style={{ fontFamily: 'var(--font-hud)' }}
             />
             <button
               onClick={sendMessage}
               disabled={streaming || !input.trim()}
-              className="px-4 py-3 text-xs tracking-widest transition-all disabled:opacity-30"
+              className="px-3 md:px-4 py-3 text-xs tracking-widest transition-all disabled:opacity-30 shrink-0"
               style={{
                 border: `1px solid ${threatColor}`,
                 color: threatColor,
                 background: streaming ? `${threatColor}11` : 'transparent',
               }}
             >
-              {streaming ? 'SENDING...' : 'TRANSMIT →'}
+              {streaming ? '...' : '→'}
             </button>
           </div>
-          <p className="text-xs opacity-30 mt-2 tracking-widest text-[var(--hud-primary)]">
+          <p className="text-xs opacity-30 mt-1 tracking-widest text-[var(--hud-primary)] hidden md:block">
             ENTER TO SEND — SHIFT+ENTER FOR NEW LINE
           </p>
         </div>

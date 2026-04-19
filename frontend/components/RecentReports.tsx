@@ -63,23 +63,23 @@ export default function RecentReports({ onClose }: Props) {
   }
 
   return (
-    <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/70 animate-fade-in">
+    <div className="absolute inset-0 z-20 flex items-end md:items-center justify-center bg-black/70 animate-fade-in">
       <div
-        className="hud-border hud-corner bg-[var(--hud-surface)] w-full max-w-2xl mx-4 animate-slide-in flex flex-col"
-        style={{ maxHeight: '80vh' }}
+        className="hud-border hud-corner bg-[var(--hud-surface)] w-full md:max-w-2xl md:mx-4 animate-slide-in flex flex-col"
+        style={{ maxHeight: '90vh' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--hud-border)]">
+        <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 border-b border-[var(--hud-border)]">
           <div>
             <p className="text-xs tracking-[0.4em] opacity-50 mb-1 text-[var(--hud-primary)]">
               COMMUNITY INTELLIGENCE
             </p>
-            <h2 className="text-lg tracking-widest text-[var(--hud-primary)]">
+            <h2 className="text-base md:text-lg tracking-widest text-[var(--hud-primary)]">
               FIELD REPORTS
             </h2>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs tracking-widest opacity-40 text-[var(--hud-primary)]">
+          <div className="flex items-center gap-3 md:gap-4">
+            <span className="text-xs tracking-widest opacity-40 text-[var(--hud-primary)] hidden sm:block">
               {reports.length} REPORTS LOGGED
             </span>
             <button
@@ -92,7 +92,7 @@ export default function RecentReports({ onClose }: Props) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-6 py-4">
+        <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4">
           {loading ? (
             <div className="flex items-center justify-center py-16">
               <p className="text-xs tracking-widest opacity-40 animate-pulse text-[var(--hud-primary)]">
@@ -115,7 +115,7 @@ export default function RecentReports({ onClose }: Props) {
                 return (
                   <div
                     key={report.id}
-                    className="p-4 border border-[var(--hud-border)] animate-fade-in"
+                    className="p-4 border animate-fade-in"
                     style={{
                       background: `${color}06`,
                       borderColor: `${color}22`,
@@ -137,7 +137,7 @@ export default function RecentReports({ onClose }: Props) {
                         </p>
                       </div>
                       <span
-                        className="text-xs shrink-0 opacity-40 text-[var(--hud-primary)]"
+                        className="text-xs shrink-0 opacity-40 text-[var(--hud-primary)] hidden sm:block"
                         style={{ fontFamily: 'var(--font-hud)', fontSize: 11 }}
                       >
                         {formatDate(report.created_at)}
@@ -145,7 +145,7 @@ export default function RecentReports({ onClose }: Props) {
                     </div>
 
                     {/* Threat + location */}
-                    <div className="flex items-center gap-3 mb-2 ml-4">
+                    <div className="flex flex-wrap items-center gap-2 mb-2 ml-4">
                       <span
                         style={{
                           color,
@@ -174,13 +174,19 @@ export default function RecentReports({ onClose }: Props) {
                       {report.description}
                     </p>
 
-                    {/* Reporter */}
-                    <div className="mt-2 ml-4">
+                    {/* Reporter + date on mobile */}
+                    <div className="mt-2 ml-4 flex items-center justify-between">
                       <span
                         className="opacity-30 text-[var(--hud-primary)]"
                         style={{ fontFamily: 'var(--font-hud)', fontSize: 11 }}
                       >
                         REPORTED BY: {report.reporter_name.toUpperCase()}
+                      </span>
+                      <span
+                        className="text-xs opacity-40 text-[var(--hud-primary)] sm:hidden"
+                        style={{ fontFamily: 'var(--font-hud)', fontSize: 10 }}
+                      >
+                        {formatDate(report.created_at)}
                       </span>
                     </div>
                   </div>
@@ -191,13 +197,13 @@ export default function RecentReports({ onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-[var(--hud-border)] flex justify-between items-center">
-          <p className="text-xs opacity-30 text-[var(--hud-primary)] tracking-widest">
+        <div className="px-4 md:px-6 py-3 border-t border-[var(--hud-border)] flex justify-between items-center">
+          <p className="text-xs opacity-30 text-[var(--hud-primary)] tracking-widest hidden sm:block">
             COMMUNITY OBSERVATIONS HELP TRACK UNREPORTED THREATS
           </p>
           <button
             onClick={onClose}
-            className="text-xs tracking-widest px-4 py-1 transition-opacity hover:opacity-100 opacity-60"
+            className="text-xs tracking-widest px-4 py-1 transition-opacity hover:opacity-100 opacity-60 ml-auto"
             style={{
               border: '1px solid var(--hud-border)',
               color: 'var(--hud-primary)',

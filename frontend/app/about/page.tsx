@@ -1,188 +1,240 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
+import { supabase, OceanRegion } from '@/lib/supabase'
+import MonologuePanel from '@/components/MonologuePanel'
+import DialoguePanel from '@/components/DialoguePanel'
+import SonarPing from '@/components/SonarPing'
+import SignalStrength from '@/components/SignalStrength'
+import ThemeToggle from '@/components/ThemeToggle'
+import LoadingScreen from '@/components/LoadingScreen'
+import ThreatLegend from '@/components/ThreatLegend'
+import ReportForm from '@/components/ReportForm'
+import HudStats from '@/components/HudStats'
+import RecentReports from '@/components/RecentReports'
+import MobileMenu from '@/components/MobileMenu'
 import { useRouter } from 'next/navigation'
 
-export default function AboutPage() {
+const GlobeMap = dynamic(() => import('@/components/GlobeMap'), { ssr: false })
+
+const THREAT_COLORS: Record<string, string> = {
+  coral_bleaching: '#ff6b35',
+  dead_zone:       '#8b00ff',
+  pollution:       '#ff4444',
+  ice_melt:        '#00aaff',
+  overfishing:     '#ffaa00',
+  acidification:   '#ff00aa',
+}
+
+type AppState = 'map' | 'monologue' | 'dialogue'
+
+export default function Home() {
+  const [regions, setRegions]         = useState<OceanRegion[]>([])
+  const [selected, setSelected]       = useState<OceanRegion | null>(null)
+  const [appState, setAppState]       = useState<AppState>('map')
+  const [monologue, setMonologue]     = useState('')
+  const [showPing, setShowPing]       = useState(false)
+  const [pingColor, setPingColor]     = useState('#00d4ff')
+  const [isDark, setIsDark]           = useState(true)
+  const [loading, setLoading]         = useState(true)
+  const [showReport, setShowReport]   = useState(false)
+  const [showReports, setShowReports] = useState(false)
   const router = useRouter()
 
+  useEffect(() => {
+    supabase
+      .from('ocean_regions')
+      .select('*')
+      .then(({ data }) => { if (data) setRegions(data) })
+  }, [])
+
+  const handleRegionSelect = (region: OceanRegion) => {
+    setSelected(region)
+    setMonologue('')
+    setPingColor(THREAT_COLORS[region.primary_threat] ?? '#00d4ff')
+    setShowPing(true)
+  }
+
+  const handleBack = () => {
+    setSelected(null)
+    setAppState('map')
+    setMonologue('')
+  }
+
   return (
-    <main className="w-screen min-h-screen bg-[#020b14] overflow-y-auto">
+    <main className="w-screen h-screen relative overflow-hidden bg-[#020b14]">
+
+      {/* Loading screen */}
+      {loading && (
+        <LoadingScreen onComplete={() => setLoading(false)} />
+      )}
 
       {/* Top HUD bar */}
-      <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-3 hud-border border-t-0 border-l-0 border-r-0 bg-[#020b14]">
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-[var(--hud-primary)] animate-pulse" />
-          <span className="text-[var(--hud-primary)] text-sm tracking-[0.3em] font-bold">
-            ABYSSAL SCOPE
-          </span>
-        </div>
-        <span className="text-[var(--hud-primary)] text-xs tracking-widest opacity-60">
-          OCEAN THREAT MONITORING SYSTEM v1.0
-        </span>
-        <button
-          onClick={() => router.push('/')}
-          className="text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
-          style={{ border: '1px solid var(--hud-border)', padding: '4px 12px', fontFamily: 'var(--font-hud)' }}
-        >
-          ← BACK TO MAP
-        </button>
-      </div>
+      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-2 hud-border border-t-0 border-l-0 border-r-0">
 
-      {/* Content */}
-      <div className="max-w-3xl mx-auto px-8 py-16">
-
-        {/* Hero */}
-        <div className="mb-16 hud-corner" style={{ padding: '2px' }}>
-          <div className="border border-[var(--hud-border)] p-8" style={{ boxShadow: '0 0 40px rgba(0,212,255,0.05)' }}>
-            <p className="text-xs tracking-[0.4em] opacity-50 mb-3 text-[var(--hud-primary)]">
-              MISSION BRIEFING
-            </p>
-            <h1 className="text-3xl tracking-widest text-[var(--hud-primary)] mb-4 font-bold">
-              WHAT IS ABYSSAL SCOPE?
-            </h1>
-            <p className="text-sm leading-relaxed opacity-80 text-[var(--hud-primary)]">
-              AbyssalScope is an AI-powered ocean threat monitoring system that gives the world's most endangered ocean regions a voice. Select any region on the map, and the ocean itself will tell you what is happening to it — in real time, grounded in verified scientific data.
-            </p>
-          </div>
-        </div>
-
-        {/* How it works */}
-        <div className="mb-12">
-          <p className="text-xs tracking-[0.4em] opacity-50 mb-6 text-[var(--hud-primary)]">
-            HOW IT WORKS
-          </p>
-          <div className="space-y-4">
-            {[
-              {
-                step: '01',
-                title: 'SELECT A REGION',
-                desc: 'Click any threat marker on the map. A submarine navigates to your selected region as the system establishes contact.',
-                color: '#00d4ff',
-              },
-              {
-                step: '02',
-                title: 'THE OCEAN SPEAKS',
-                desc: 'Claude AI generates a first-person distress transmission from that body of water — grounded in real NOAA, AIMS, NSIDC and WWF data stored in our database.',
-                color: '#ffaa00',
-              },
-              {
-                step: '03',
-                title: 'START A DIALOGUE',
-                desc: 'After the monologue, you can talk back. Ask questions, challenge the ocean, or find out what you can do. Ocean stays in character and responds with facts.',
-                color: '#ff6b35',
-              },
-              {
-                step: '04',
-                title: 'REAL DATA, REAL STAKES',
-                desc: 'Every statistic the ocean cites is sourced from peer-reviewed studies and government agencies. The AI gives the data a voice — it does not invent the facts.',
-                color: '#00ff88',
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="flex gap-6 p-6 border border-[var(--hud-border)] animate-fade-in"
-                style={{ background: 'rgba(0,212,255,0.02)' }}
-              >
-                <div
-                  className="text-2xl font-bold shrink-0"
-                  style={{ color: item.color, fontFamily: 'var(--font-hud)', opacity: 0.6 }}
-                >
-                  {item.step}
-                </div>
-                <div>
-                  <p className="text-xs tracking-widest mb-2" style={{ color: item.color }}>
-                    {item.title}
-                  </p>
-                  <p className="text-sm leading-relaxed opacity-70 text-[var(--hud-primary)]">
-                    {item.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Threat legend */}
-        <div className="mb-12">
-          <p className="text-xs tracking-[0.4em] opacity-50 mb-6 text-[var(--hud-primary)]">
-            THREAT CLASSIFICATION
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { label: 'CORAL BLEACHING', color: '#ff6b35' },
-              { label: 'OXYGEN DEPLETION', color: '#8b00ff' },
-              { label: 'CHEMICAL POLLUTION', color: '#ff4444' },
-              { label: 'ICE SHEET COLLAPSE', color: '#00aaff' },
-              { label: 'ECOSYSTEM COLLAPSE', color: '#ffaa00' },
-              { label: 'OCEAN ACIDIFICATION', color: '#ff00aa' },
-            ].map((threat) => (
-              <div
-                key={threat.label}
-                className="flex items-center gap-3 p-3 border border-[var(--hud-border)]"
-                style={{ background: `${threat.color}08` }}
-              >
-                <div
-                  className="w-3 h-3 rounded-full shrink-0"
-                  style={{ background: threat.color, boxShadow: `0 0 6px ${threat.color}` }}
-                />
-                <span className="text-xs tracking-widest" style={{ color: threat.color }}>
-                  {threat.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Data sources */}
-        <div className="mb-12">
-          <p className="text-xs tracking-[0.4em] opacity-50 mb-6 text-[var(--hud-primary)]">
-            DATA SOURCES
-          </p>
-          <div className="border border-[var(--hud-border)] p-6" style={{ background: 'rgba(0,212,255,0.02)' }}>
-            <p className="text-sm leading-relaxed opacity-70 text-[var(--hud-primary)] mb-4">
-              All ocean health data is sourced from verified scientific institutions and peer-reviewed research. AbyssalScope does not generate statistics — it grounds AI responses in real measurements.
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                'NOAA Coral Reef Watch',
-                'Australian Institute of Marine Science (AIMS)',
-                'National Snow and Ice Data Center (NSIDC)',
-                'NASA Earthdata',
-                'WWF Living Planet Report',
-                'Mekong River Commission',
-                'IUCN Red List',
-                'Conservation International',
-                'Oceana UK',
-                'UN Environment Programme',
-              ].map((source) => (
-                <div key={source} className="flex items-center gap-2">
-                  <span className="text-[var(--hud-primary)] opacity-40">—</span>
-                  <span className="text-xs opacity-60 text-[var(--hud-primary)]">{source}</span>
-                </div>
-              ))}
+        {/* Logo */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="relative">
+            <div
+              className="absolute inset-0 rounded-full animate-ping"
+              style={{ background: 'rgba(0,212,255,0.15)', animationDuration: '2s' }}
+            />
+            <div
+              className="relative w-8 h-8 rounded-full flex items-center justify-center"
+              style={{
+                border: '1px solid rgba(0,212,255,0.6)',
+                background: 'rgba(0,212,255,0.08)',
+                boxShadow: '0 0 12px rgba(0,212,255,0.3)',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="7" stroke="#00d4ff" strokeWidth="0.5" strokeOpacity="0.4"/>
+                <circle cx="8" cy="8" r="4.5" stroke="#00d4ff" strokeWidth="0.5" strokeOpacity="0.6"/>
+                <circle cx="8" cy="8" r="2" stroke="#00d4ff" strokeWidth="0.5" strokeOpacity="0.8"/>
+                <circle cx="8" cy="8" r="1" fill="#00d4ff"/>
+                <line x1="8" y1="8" x2="15" y2="8" stroke="#00d4ff" strokeWidth="0.8" strokeOpacity="0.8"/>
+              </svg>
             </div>
           </div>
+          <div className="flex flex-col">
+            <span
+              className="font-bold leading-none"
+              style={{
+                color: '#00d4ff',
+                fontFamily: 'var(--font-hud)',
+                fontSize: 15,
+                letterSpacing: '0.25em',
+                textShadow: '0 0 20px rgba(0,212,255,0.5)',
+              }}
+            >
+              ABYSSAL
+            </span>
+            <span
+              className="leading-none"
+              style={{
+                color: '#00d4ff',
+                fontFamily: 'var(--font-hud)',
+                fontSize: 9,
+                letterSpacing: '0.5em',
+                opacity: 0.7,
+              }}
+            >
+              SCOPE
+            </span>
+          </div>
         </div>
 
-        {/* CTA */}
-        <div className="text-center pb-8">
+        {/* Center stats — hidden on mobile */}
+        <div className="hidden md:block">
+          <HudStats regions={regions} />
+        </div>
+
+        {/* Desktop controls */}
+        <div className="hidden md:flex items-center gap-2 shrink-0">
+          <ThemeToggle isDark={isDark} onToggle={() => setIsDark(prev => !prev)} />
           <button
-            onClick={() => router.push('/')}
-            className="px-12 py-4 text-sm tracking-[0.4em] transition-all"
-            style={{
-              border: '1px solid #00d4ff',
-              color: '#00d4ff',
-              background: 'rgba(0,212,255,0.05)',
-              fontFamily: 'var(--font-hud)',
-              cursor: 'pointer',
-              boxShadow: '0 0 20px rgba(0,212,255,0.1)',
-            }}
+            onClick={() => router.push('/about')}
+            className="text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
+            style={{ border: '1px solid var(--hud-border)', padding: '4px 10px', fontFamily: 'var(--font-hud)' }}
           >
-            ▶ ENTER THE DEEP
+            ABOUT
           </button>
+          <button
+            onClick={() => setShowReport(true)}
+            className="text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
+            style={{ border: '1px solid var(--hud-border)', padding: '4px 10px', fontFamily: 'var(--font-hud)' }}
+          >
+            + REPORT
+          </button>
+          <button
+            onClick={() => setShowReports(true)}
+            className="text-xs tracking-widest opacity-60 hover:opacity-100 transition-opacity text-[var(--hud-primary)]"
+            style={{ border: '1px solid var(--hud-border)', padding: '4px 10px', fontFamily: 'var(--font-hud)' }}
+          >
+            FIELD REPORTS
+          </button>
+          <SignalStrength />
         </div>
 
+        {/* Mobile controls */}
+        <div className="flex md:hidden items-center gap-2">
+          <SignalStrength />
+          <MobileMenu
+            onReport={() => setShowReport(true)}
+            onFieldReports={() => setShowReports(true)}
+            isDark={isDark}
+            onToggleTheme={() => setIsDark(prev => !prev)}
+          />
+        </div>
       </div>
+
+      {/* Map */}
+      <div className="absolute inset-0 z-0">
+        {regions.length > 0 && (
+          <GlobeMap
+            regions={regions}
+            onRegionSelect={handleRegionSelect}
+            selected={selected}
+            isDark={isDark}
+          />
+        )}
+      </div>
+
+      {/* Threat legend */}
+      {appState === 'map' && (
+        <ThreatLegend regions={regions} />
+      )}
+
+      {/* Bottom instruction */}
+      {appState === 'map' && (
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-center">
+          <p className="text-[var(--hud-primary)] text-xs tracking-[0.4em] opacity-70 animate-pulse">
+            SELECT A REGION TO ESTABLISH CONTACT
+          </p>
+        </div>
+      )}
+
+      {/* Sonar ping */}
+      {showPing && (
+        <SonarPing
+          color={pingColor}
+          onDone={() => {
+            setShowPing(false)
+            setAppState('monologue')
+          }}
+        />
+      )}
+
+      {/* Monologue panel */}
+      {appState === 'monologue' && selected && (
+        <MonologuePanel
+          region={selected}
+          onMonologueComplete={setMonologue}
+          onComplete={() => setAppState('dialogue')}
+          onBack={handleBack}
+        />
+      )}
+
+      {/* Dialogue panel */}
+      {appState === 'dialogue' && selected && (
+        <DialoguePanel
+          region={selected}
+          monologue={monologue}
+          onBack={handleBack}
+        />
+      )}
+
+      {/* Report form */}
+      {showReport && (
+        <ReportForm onClose={() => setShowReport(false)} />
+      )}
+
+      {/* Recent reports */}
+      {showReports && (
+        <RecentReports onClose={() => setShowReports(false)} />
+      )}
+
     </main>
   )
 }
