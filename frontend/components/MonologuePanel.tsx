@@ -140,6 +140,12 @@ export default function MonologuePanel({ region, onComplete, onBack }: Props) {
               +{region.temperature_anomaly}°C
             </p>
           </div>
+          <div>
+            <p className="text-xs opacity-50 tracking-widest mb-1">DATA SOURCE</p>
+            <p className="text-xs opacity-70" style={{ color: threatColor }}>
+                {region.source ?? 'NOAA / AIMS / NSIDC'}
+            </p>
+            </div>
         </div>
 
         {/* Monologue */}

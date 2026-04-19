@@ -15,4 +15,5 @@ export type OceanRegion = {
   temperature_anomaly: number
   latitude: number
   longitude: number
+  source: string
 }
