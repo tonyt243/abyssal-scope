@@ -68,7 +68,7 @@ export default function AboutPage() {
               {
                 step: '03',
                 title: 'START A DIALOGUE',
-                desc: 'After the monologue, you can talk back. Ask questions, challenge the ocean, or find out what you can do. Claude stays in character and responds with facts.',
+                desc: 'After the monologue, you can talk back. Ask questions, challenge the ocean, or find out what you can do. Ocean stays in character and responds with facts.',
                 color: '#ff6b35',
               },
               {
